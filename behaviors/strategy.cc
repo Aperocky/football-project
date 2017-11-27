@@ -73,22 +73,93 @@ SkillType NaoBehavior::selectSkill() {
 }
 
 SkillType NaoBehavior::TurtleDefense() {
-    VecPosition ourgoal = VecPosition(-HALF_FIELD_X, 0, 0)
-    VecPosition theirgoal = VecPosition(HALF_FIELD_X, 0, 0)
-    bool danger = 
+    VecPosition ourgoal = VecPosition(-HALF_FIELD_X+2, 0, 0);
+    VecPosition theirgoal = VecPosition(HALF_FIELD_X, 0, 0);
+    bool danger = ourgoal.getDistanceTo(ball) < 25;
+    bool extreme_danger = ourgal.getDistanceTo(ball) < 8;
     // TODO for first four players, defend around goal.
     if (worldModel->getUNum()<5){
-
+        VecPosition target = ourgoal;
+        if (worldModel->getUNum()<3 && danger){
+            target = ball;
+        }
+        if ( extreme_danger ){
+            target = ball;
+        }
+        VecPosition mein_point = worldModel->getMyPosition();
+        mein_point.setZ(0);
+        if (mein_point.getDistanceTo(ball) < 3){
+            return kickBall(KICK_IK, theirgoal);
+        }
+        target = collisionAvoidance(true /*teammate*/, false/*opponent*/, true/*ball*/, 1/*proximity thresh*/, .5/*collision thresh*/, target, true/*keepDistance*/);
+        return goToTarget(target);
     }
 
     // TODO for rest of the players:
     /*
-    * Closest 3 player will rush to the ball and kick it
+    * Closest 4 player will rush to the ball and kick it
     * in the direction of the player who's furthest into the enemy half
-    * MEANWHILE 4 other player will move into a fan area around the ball
+    * MEANWHILE 3 other player will move into a fan area around the ball
     *
     * REPEAT, IF CLOSE ENOUGH, KICK TOWARD GOAL AT HIGHEST SPEED.
     */
+
+    // FIND THE CLOSEST ROBOT TO THE BALL
+    int playerClosestToBall = -1;
+    double closestDistanceToBall = 10000;
+    for(int i = WO_TEAMMATE5; i < WO_TEAMMATE5+NUM_AGENTS-4; ++i) {
+        VecPosition temp;
+        int playerNum = i - WO_TEAMMATE1 + 1;
+        if (worldModel->getUNum() == playerNum) {
+            // This is us
+            temp = worldModel->getMyPosition();
+        } else {
+            WorldObject* teammate = worldModel->getWorldObject( i );
+            if (teammate->validPosition) {
+                temp = teammate->pos;
+            } else {
+                continue;
+            }
+        }
+        temp.setZ(0);
+        // Temp is set to be the x, y position of player closest to ball.
+
+        double distanceToBall = temp.getDistanceTo(ball);
+        if (distanceToBall < closestDistanceToBall) {
+            playerClosestToBall = playerNum;
+            closestDistanceToBall = distanceToBall;
+        }
+        // At the end of the loop we have playerClosestToBall and closestDistanceToBall
+    }
+
+    // FIND THE ROBOT CLOSEST TO ENEMY GOAL.
+    int playerClosestToEnemy = -1;
+    double closestDistanceToEnemy = 10000;
+    for(int i = WO_TEAMMATE5; i < WO_TEAMMATE5+NUM_AGENTS-4; ++i) {
+        VecPosition temp;
+        int playerNum = i - WO_TEAMMATE1 + 1;
+        if (worldModel->getUNum() == playerNum) {
+            // This is us
+            temp = worldModel->getMyPosition();
+        } else {
+            WorldObject* teammate = worldModel->getWorldObject( i );
+            if (teammate->validPosition) {
+                temp = teammate->pos;
+            } else {
+                continue;
+            }
+        }
+        temp.setZ(0);
+        // Temp is set to be the x, y position of player closest to ball.
+
+        double distanceToBall = temp.getDistanceTo(theirgoal);
+        if (distanceToBall < closestDistanceToBall) {
+            playerClosestToEnemy = playerNum;
+            closestDistanceToEnemy = distanceToBall;
+        }
+        // At the end of the loop we have playerClosestToBall and closestDistanceToBall
+    }
+
 }
 
 
