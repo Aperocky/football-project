@@ -160,6 +160,24 @@ SkillType NaoBehavior::TurtleDefense() {
         // At the end of the loop we have playerClosestToBall and closestDistanceToBall
     }
 
+    if (playerClosestToBall == worldModel->getUNum()) {
+        if (playerClosestToBall == playerClosestToEnemy){
+            if (worldModel->getMyPosition().getDistanceTo(theirgoal)< 15){
+                return kickBall(KICK_IK, theirgoal);
+            } else {
+                return kickBall(KICK_DRIBBLE, theirgoal);
+            }
+        }
+        WorldObject* teammate = worldModel->getWorldObject(playerClosestToEnemy);
+        VecPosition kickto = teammate->pos;
+        kickto.setZ(0);
+        return kickBall(KICK_FORWARD, kickto);
+    } else {
+        VecPosition target = ball;
+        target = collisionAvoidance(true /*teammate*/, false/*opponent*/, true/*ball*/, 1/*proximity thresh*/, .5/*collision thresh*/, target, true/*keepDistance*/);
+        return goToTarget(target);
+    }
+
 }
 
 
