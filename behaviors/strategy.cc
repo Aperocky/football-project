@@ -69,14 +69,15 @@ SkillType NaoBehavior::selectSkill() {
 
     // Demo behavior where players form a rotating circle and kick the ball
     // back and forth
-    return demoKickingCircle();
+    // return demoKickingCircle();
+    return TurtleDefense();
 }
 
 SkillType NaoBehavior::TurtleDefense() {
-    VecPosition ourgoal = VecPosition(-HALF_FIELD_X+2, 0, 0);
+    VecPosition ourgoal = VecPosition(-HALF_FIELD_X+1.5, 0, 0);
     VecPosition theirgoal = VecPosition(HALF_FIELD_X, 0, 0);
-    bool danger = ourgoal.getDistanceTo(ball) < 25;
-    bool extreme_danger = ourgal.getDistanceTo(ball) < 8;
+    bool danger = ourgoal.getDistanceTo(ball) < 12;
+    bool extreme_danger = ourgoal.getDistanceTo(ball) < 6;
     // TODO for first four players, defend around goal.
     if (worldModel->getUNum()<5){
         VecPosition target = ourgoal;
@@ -89,7 +90,7 @@ SkillType NaoBehavior::TurtleDefense() {
         VecPosition mein_point = worldModel->getMyPosition();
         mein_point.setZ(0);
         if (mein_point.getDistanceTo(ball) < 3){
-            return kickBall(KICK_IK, theirgoal);
+            return kickBall(KICK_FORWARD, theirgoal);
         }
         target = collisionAvoidance(true /*teammate*/, false/*opponent*/, true/*ball*/, 1/*proximity thresh*/, .5/*collision thresh*/, target, true/*keepDistance*/);
         return goToTarget(target);
@@ -162,22 +163,24 @@ SkillType NaoBehavior::TurtleDefense() {
 
     if (playerClosestToBall == worldModel->getUNum()) {
         if (playerClosestToBall == playerClosestToEnemy){
-            if (worldModel->getMyPosition().getDistanceTo(theirgoal)< 15){
-                return kickBall(KICK_IK, theirgoal);
+            if (worldModel->getMyPosition().getDistanceTo(theirgoal)< 10){
+                return kickBall(KICK_FORWARD, theirgoal);
             } else {
-                return kickBall(KICK_DRIBBLE, theirgoal);
+                return kickBall(KICK_FORWARD, theirgoal);
             }
         }
         WorldObject* teammate = worldModel->getWorldObject(playerClosestToEnemy);
-        VecPosition kickto = teammate->pos;
-        kickto.setZ(0);
+        VecPosition kickto = theirgoal;
+        if (teammate->validPosition) {
+            kickto = teammate->pos;
+            kickto.setZ(0);
+        }
         return kickBall(KICK_FORWARD, kickto);
     } else {
         VecPosition target = ball;
-        target = collisionAvoidance(true /*teammate*/, false/*opponent*/, true/*ball*/, 1/*proximity thresh*/, .5/*collision thresh*/, target, true/*keepDistance*/);
+        target = collisionAvoidance(true /*teammate*/, false/*opponent*/, true/*ball*/, 2/*proximity thresh*/, 1/*collision thresh*/, target, true/*keepDistance*/);
         return goToTarget(target);
     }
-
 }
 
 
