@@ -221,6 +221,7 @@ protected:
     void getSkillsForKickType(int kickType, SkillType skillsForType[]);
 
     SkillType demoKickingCircle();
+    SkillType TurtleDefense();
 
 public:
 
@@ -239,4 +240,3 @@ public:
 };
 
 #endif // NAOBEHAVIOR_H
-

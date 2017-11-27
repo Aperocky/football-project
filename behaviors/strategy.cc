@@ -72,6 +72,25 @@ SkillType NaoBehavior::selectSkill() {
     return demoKickingCircle();
 }
 
+SkillType NaoBehavior::TurtleDefense() {
+    VecPosition ourgoal = VecPosition(-HALF_FIELD_X, 0, 0)
+    VecPosition theirgoal = VecPosition(HALF_FIELD_X, 0, 0)
+    bool danger = 
+    // TODO for first four players, defend around goal.
+    if (worldModel->getUNum()<5){
+
+    }
+
+    // TODO for rest of the players:
+    /*
+    * Closest 3 player will rush to the ball and kick it
+    * in the direction of the player who's furthest into the enemy half
+    * MEANWHILE 4 other player will move into a fan area around the ball
+    *
+    * REPEAT, IF CLOSE ENOUGH, KICK TOWARD GOAL AT HIGHEST SPEED.
+    */
+}
+
 
 /*
  * Demo behavior where players form a rotating circle and kick the ball
@@ -101,12 +120,14 @@ SkillType NaoBehavior::demoKickingCircle() {
             }
         }
         temp.setZ(0);
+        // Temp is set to be the x, y position of player closest to ball.
 
         double distanceToBall = temp.getDistanceTo(ball);
         if (distanceToBall < closestDistanceToBall) {
             playerClosestToBall = playerNum;
             closestDistanceToBall = distanceToBall;
         }
+        // At the end of the loop we have playerClosestToBall and closestDistanceToBall
     }
 
     if (playerClosestToBall == worldModel->getUNum()) {
@@ -136,5 +157,3 @@ SkillType NaoBehavior::demoKickingCircle() {
         }
     }
 }
-
-
